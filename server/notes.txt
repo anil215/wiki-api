@@ -1,0 +1,13 @@
+we would be reusing the code to generate jwt's so instaed od copying it in POST /users
+route we create reusable methods => model and instance methods , model methods are
+called on the User object and instance method is called on the individual entity
+(var entity = new User()) . Instance method , generateAuthToken method is responsible
+for adding token to an individual document , saving that and returing the token to the
+user. This requires the individual document to exist and hence created as an instance
+method.Modal methods on the other hand do not require an individual document , example
+findByToken(custom method , i will create ), take the jwt the user sends , we will find
+the user and return that user.
+
+This api is using my own custom header x-auth , which i need to send while posting a wiki,
+deleting or updating a wiki and since this x-auth is nothing but the hashed value of the unique _id value of the user
+this -auth token is unique.
