@@ -9,6 +9,7 @@ const {mongoose} = require('./db/mongoose.js');
 const {populate} = require('./wikipedia.js');
 const {Wiki} = require('./models/wiki.js');
 const {User} = require('./models/user.js');
+const {authenticate} = require('./middleware/authenticate.js');
 
 var app = express();
 
@@ -129,6 +130,12 @@ app.post('/users', (req,res) => {
   })
 });
 
+
+
+// GET /users/me
+app.get('/users/me',authenticate, (req,res) => {
+  res.send(req.user);
+});
 
 app.listen(3000, () => {
   console.log('Server is running on port 3000');

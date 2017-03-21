@@ -1,3 +1,6 @@
+instance methods works on documents ( rows) , here this is the individual document
+model methods work on the collection ( tables ) , here this is the collction
+
 we would be reusing the code to generate jwt's so instaed od copying it in POST /users
 route we create reusable methods => model and instance methods , model methods are
 called on the User object and instance method is called on the individual entity
@@ -11,3 +14,13 @@ the user and return that user.
 This api is using my own custom header x-auth , which i need to send while posting a wiki,
 deleting or updating a wiki and since this x-auth is nothing but the hashed value of the unique _id value of the user
 this -auth token is unique.
+
+Now for the x-auth token to work correctly , i need to create a middleware so that i can make
+the create , delete , insert routes of wikis private , means accessed only when the user authenticates
+himself.
+
+The POST /users will be a public route for creating a user
+The GET /users/me , used when the user has already signed up and is relogging.
+    This performs the duty of sending the respective user back , _id and email.
+    First grabs the x-auth token from request.
+    Now use the model methods to find for this hashed token in the database

@@ -35,7 +35,7 @@ var UserSchema = new mongoose.Schema({
   }]
 });
 
-// instance methods
+// instance methods works on documents ( rows)
 UserSchema.methods.generateAuthToken = function() {
   var user = this;
   var access = 'auth';
@@ -61,6 +61,28 @@ UserSchema.methods.toJSON = function() {
 
   return _.pick(userObject,['_id','email']);
 }
+
+// model methods work on the collection ( tables )
+UserSchema.statics.findByToken = function(token){
+  var User = this;
+  var decoded;
+
+  try {
+    // this returns error on false validation and the code jumps to catch block
+    decoded = jwt.verify(token,'abc123');
+  } catch (e) {
+    return new Promise((resolve,reject) => {
+      reject();
+    });
+  }
+
+// sending the promise returned by findOne to server.js
+  return User.findOne({
+    _id : decoded._id,
+    'tokens.token':token,
+    'tokens.access':'auth'
+  });
+};
 
 var User = mongoose.model('User',UserSchema);
 
