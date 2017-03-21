@@ -24,3 +24,7 @@ The GET /users/me , used when the user has already signed up and is relogging.
     This performs the duty of sending the respective user back , _id and email.
     First grabs the x-auth token from request.
     Now use the model methods to find for this hashed token in the database
+The POST /users/login , route for user who has already signed up and needs to relogin
+    User will send email and plain text password
+    The authenticate middleware will not be used as we do not have the token, we are trying to login
+    We will create another model method findByCredentials

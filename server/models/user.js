@@ -85,6 +85,25 @@ UserSchema.statics.findByToken = function(token){
   });
 };
 
+UserSchema.statics.findByCredentials = function(email,password) {
+  var User = this;
+  return User.findOne({email:email}).then((user) => {
+    if(!user){
+      return Promise.reject();
+    }
+    return new Promise((resolve,reject) => {
+      bcrypt.compare(password,user.password,(err,res) => {
+        if(err || !res){
+          return reject();
+        }
+        if(res){
+          return resolve(user);
+        }
+      });
+    });
+  });
+};
+
 // this function is called before each save so that we can hash the password
 // to prevent rehashing of the hashed passwoed which might occur when we modified and
 // are trying to save , we use a build in instance method.
