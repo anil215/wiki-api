@@ -15,7 +15,7 @@ var app = express();
 
 app.use(bodyParser.json());
 
-app.post('/wikis',(req,res) => {
+app.post('/wikis',authenticate,(req,res) => {
   var name = req.body.name;
 
   populate(name,(e,data) => {
@@ -27,7 +27,8 @@ app.post('/wikis',(req,res) => {
       name : name,
       noted : false,
       data : data,
-      completedAt : 123
+      completedAt : 123,
+      _creater: req.user._id
     });
 
     newWiki.save().then((data) => {
@@ -41,20 +42,25 @@ app.post('/wikis',(req,res) => {
 });
 
 
-app.get('/wikis',(req,res) => {
-  Wiki.find().then((wikis) => {
+app.get('/wikis',authenticate,(req,res) => {
+  Wiki.find({
+    _creater:req.user._id
+  }).then((wikis) => {
     res.send({wikis});
   },(err) => {
     res.status(400).send(err);
   });
 });
 
-app.get('/wikis/:id', (req,res) => {
+app.get('/wikis/:id',authenticate, (req,res) => {
   var id = req.params.id;
   if(!ObjectID.isValid(id)){
     return res.status(404).send();
   }
-  Wiki.findById(id).then( (wiki) => {
+  Wiki.findOne({
+    _id:id,
+    _creater:req.user._id
+  }).then( (wiki) => {
     if(!wiki){
       return res.status(404).send();
     }
@@ -64,13 +70,16 @@ app.get('/wikis/:id', (req,res) => {
   });
 });
 
-app.delete('/wikis/:id',(req,res) => {
+app.delete('/wikis/:id',authenticate,(req,res) => {
   var id = req.params.id;
 
   if(!ObjectID.isValid(id)){
     return res.status(404).send();
   }
-  Wiki.findByIdAndRemove(id).then((wiki) => {
+  Wiki.findOneAndRemove({
+    _id:id,
+    _creater:req.user._id
+  }).then((wiki) => {
     if(!wiki){
       return res.status(404).send();
     }
@@ -80,7 +89,7 @@ app.delete('/wikis/:id',(req,res) => {
   });
 });
 
-app.patch('/wikis/:id',(req,res) => {
+app.patch('/wikis/:id',authenticate,(req,res) => {
   var id = req.params.id;
   // an array of properties to be picked from req.body
   var body = _.pick(req.body,['noted']);
@@ -96,7 +105,10 @@ app.patch('/wikis/:id',(req,res) => {
   }
 
 
-  Wiki.findByIdAndUpdate(id,{
+  Wiki.findOneAndUpdate({
+    _id:id,
+    _creater:req.user._id
+  },{
     $set : body
   },{
     new : true

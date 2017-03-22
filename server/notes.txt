@@ -26,9 +26,10 @@ The GET /users/me , used when the user has already signed up and is relogging.
     Now use the model methods to find for this hashed token in the database
 The POST /users/login , route for user who has already signed up and needs to relogin
     User will send email and plain text password
-    The authenticate middleware will not be used as we do not have the token, we are trying to login
+    The authenticate middleware will not be used as we do not have the toke`n, we are trying to login
     We will create another model method findByCredentials
 The DELETE /users/token/me , is used for logging out , should already  be logged in to users
     it and hence our authenticate middleware will come into picture. In the authenticate middleware ,
      we have stored the hashed value of token.So to log the user out we simply have to remove this hashed value from the tokens array
      and we are done, i created an instance method for the same.
+The PATCH /wikis/:id , when noted set to true assigns the time stamp to completed at
